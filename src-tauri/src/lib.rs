@@ -282,6 +282,59 @@ fn move_into(srcs: Vec<String>, dest_dir: String) -> Result<Vec<String>, String>
 }
 
 #[tauri::command]
+fn open_default(path: String) -> Result<(), String> {
+    let p = PathBuf::from(&path);
+    if !p.exists() {
+        return Err(format!("not found: {}", path));
+    }
+    #[cfg(target_os = "macos")]
+    let (cmd, args): (&str, Vec<&str>) = ("open", vec![&path]);
+    #[cfg(target_os = "linux")]
+    let (cmd, args): (&str, Vec<&str>) = ("xdg-open", vec![&path]);
+    #[cfg(target_os = "windows")]
+    let (cmd, args): (&str, Vec<&str>) = ("cmd", vec!["/C", "start", "", &path]);
+
+    std::process::Command::new(cmd)
+        .args(&args)
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| format!("{}: {}", cmd, e))
+}
+
+#[tauri::command]
+fn reveal_in_finder(path: String) -> Result<(), String> {
+    let p = PathBuf::from(&path);
+    if !p.exists() {
+        return Err(format!("not found: {}", path));
+    }
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .args(["-R", &path])
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| e.to_string())
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let dir = if p.is_file() { p.parent().map(|x| x.to_path_buf()).unwrap_or(p) } else { p };
+        std::process::Command::new("xdg-open")
+            .arg(dir)
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| e.to_string())
+    }
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("explorer")
+            .args(["/select,", &path])
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| e.to_string())
+    }
+}
+
+#[tauri::command]
 fn canonicalize(path: String) -> Result<String, String> {
     PathBuf::from(&path)
         .canonicalize()
@@ -305,6 +358,8 @@ pub fn run() {
             remove_path,
             copy_into,
             move_into,
+            open_default,
+            reveal_in_finder,
             canonicalize
         ])
         .run(tauri::generate_context!())

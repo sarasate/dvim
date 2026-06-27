@@ -1,4 +1,3 @@
-import { open as shellOpen } from "@tauri-apps/plugin-shell";
 import { fsApi, joinPath, parentOf, basename, Entry } from "./fs";
 import {
   AppState, PaneId, PaneState, activePane, otherPane, visibleEntries, visualRange,
@@ -105,11 +104,21 @@ export class Controller {
       await this.refreshPreview();
     } else {
       try {
-        await shellOpen(cur.path);
+        await fsApi.openDefault(cur.path);
         this.flash(`opened ${cur.name}`, "ok");
       } catch (e) {
         this.flash(`open: ${e}`, "err");
       }
+    }
+  }
+  async revealInFinder() {
+    const ap = activePane(this.state);
+    const cur = visibleEntries(ap)[ap.cursor];
+    if (!cur) return;
+    try {
+      await fsApi.revealInFinder(cur.path);
+    } catch (e) {
+      this.flash(`reveal: ${e}`, "err");
     }
   }
   async up() {

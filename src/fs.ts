@@ -38,6 +38,8 @@ export const fsApi = {
     invoke<string[]>("copy_into", { srcs, destDir }),
   moveInto: (srcs: string[], destDir: string) =>
     invoke<string[]>("move_into", { srcs, destDir }),
+  openDefault: (path: string) => invoke<void>("open_default", { path }),
+  revealInFinder: (path: string) => invoke<void>("reveal_in_finder", { path }),
   canonicalize: (path: string) => invoke<string>("canonicalize", { path }),
 };
 
