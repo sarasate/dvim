@@ -1,0 +1,28 @@
+[package]
+name = "dvim"
+version = "0.1.0"
+description = "vifm-like file manager"
+authors = ["Luis"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "dvim_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.1", features = [] }
+tauri-plugin-shell = "2.0"
+tauri-plugin-dialog = "2.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target."cfg(any(target_os = \"linux\", target_os = \"macos\"))".dependencies]
+libc = "0.2"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
