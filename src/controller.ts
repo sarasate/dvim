@@ -501,7 +501,7 @@ export class Controller {
           this.closePalette();
           this.openConfirm({
             title: "QUIT",
-            message: "Close BLACKSITE?",
+            message: "Close DVIM?",
             confirmLabel: "QUIT",
             level: "warn",
             onConfirm: async () => {

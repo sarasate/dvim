@@ -45,7 +45,7 @@ function renderStatusStrip(s: AppState): string {
   const vol = abbreviateHome(s.home, s.home).replace("~", s.home);
   return `
     <div class="status-strip">
-      <div class="brand"><span class="brand-dot"></span>BLACKSITE</div>
+      <div class="brand"><span class="brand-dot"></span>DVIM</div>
       <div class="status-center">
         <span>VOL <span class="v">${esc(vol)}</span></span>
         <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">
